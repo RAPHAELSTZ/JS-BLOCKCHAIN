@@ -1,3 +1,4 @@
+import { SHA256 } from "crypto-js";
 import { Transaction } from "./transaction";
 
 export class Block {
@@ -38,9 +39,28 @@ export class Block {
         /**
          * Generates hash
          */
-        private  generateHash():string {
+        private  generateHashFake():string {
             //generates hash
             return ""+Math.random()*1000000000000000000;
+        }
+
+
+        /**
+         * Generates hash
+         */
+        public generateHash():any {
+
+            let contentToHash = {
+                timestamp: this.timestamp,
+                heightNumber: this.heightNumber,
+                previousBlockHash: this.previousBlockHash,
+                transactionList: this.transactionList,
+                difficulty: this.difficulty,
+                noonce: this.noonce
+            }
+
+            //generates hash
+            return JSON.stringify(SHA256(JSON.stringify(contentToHash)))
         }
 
 }

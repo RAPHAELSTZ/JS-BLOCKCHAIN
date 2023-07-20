@@ -1,3 +1,5 @@
+import { SHA256 } from "crypto-js";
+
 export class Transaction {
 
     senderAddress: string;
@@ -16,7 +18,23 @@ export class Transaction {
             this.receiverAddress = receiverAddress;
             this.amountInSatoshi = amountInSatoshi;
             this.transactionAdditionalData = transactionAdditionalData;
-            this.transactionHash = Math.random()*100000000000+'';
+
+            this.transactionHash = SHA256(
+               JSON.stringify( {
+                    senderAddress: this.senderAddress,
+                    receiverAddress: this.receiverAddress,
+                    transactionAdditionData: this.transactionAdditionalData,
+                    amountInSatoshi: this.amountInSatoshi
+                })
+            ).toString();
+
+
+            console.log(" ==> Hash generated for transaction :  ",   {
+                senderAddress: this.senderAddress,
+                receiverAddress: this.receiverAddress,
+                transactionAdditionData: this.transactionAdditionalData,
+                amountInSatoshi: this.amountInSatoshi
+            },  this.transactionHash)
             
     }
 

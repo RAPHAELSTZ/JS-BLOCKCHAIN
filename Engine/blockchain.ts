@@ -189,13 +189,14 @@ export class Blockchain {
     }
 
     
+    //The height of the blockchain start at 1 for the genesis Block.
     private hasValuesInProperties(block: Block):{ success: Boolean, error?: string }{
-        console.log("DEBUG HEIGHT : ", block)
+        console.log("DEBUG HEIGHT : ", block.heightNumber)
         if(block.heightNumber == null || block.heightNumber < 0) return { success: false, error: 'This block has a wrong height number'}
         if(!block.timestamp ) return { success: false, error: "This block has a wrong/bad format timestamp"}
         if(!block.blockHash && block.heightNumber !=0) return { success: false, error: "This block does not have a blockhash"}
-        if(!block.previousBlockHash && block.heightNumber !=0) return { success: false, error: "This block does not hold a previousBlockhash"}
-        if(!block.noonce && block.heightNumber !=0) return { success: false, error: "This block has no noonce.."}
+        if(!block.previousBlockHash && block.heightNumber !=1) return { success: false, error: "This block does not hold a previousBlockhash"}
+        if(!block.noonce && block.heightNumber !=1) return { success: false, error: "This block has no noonce.."}
         if(!block.transactionList) return { success: false, error: "This block holds no transaction, or has a bad transaction List"}
         if(!block.difficulty) return { success: false, error: "This block has no difficulty"}
 

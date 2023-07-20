@@ -24,6 +24,10 @@ let listOfPendingTransactions = blockchain.getPendingTransactions()
 console.log("Pending transactions :", listOfPendingTransactions)
 
 
+
+/**
+ * FOR BLOCK 2
+ */
 //Création d'un ensemble de transactions
 let transaction1 = new Transaction("SenderA", "SenderB", "J'aime les fleurs", 100000)
 let transaction2 = new Transaction("SenderA", "SenderB", "Deuxieme rose envoyée", 300000)
@@ -38,5 +42,36 @@ nextBlockTransactions.push(transaction1,transaction2,transaction3,transaction4,t
 
 //Nouveau Block (Normalement créé par un mineur):
 let recentBlock = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions, blockchain.difficulty )
+recentBlock.blockHash = recentBlock.generateHash();
+
+console.log("recent block hash: ", recentBlock.blockHash)
+
 //ajout d'un block
 blockchain.addBlock(recentBlock);
+
+
+
+/**
+ * FOR BLOCK 3
+ */
+//Création d'un ensemble de transactions
+let transaction8 = new Transaction("SenderA", "SenderB", "Information inutile", 100000)
+let transaction9 = new Transaction("SenderA", "SenderB", "Poésie moderne", 300000)
+let transaction10 = new Transaction("SenderB", "SenderC", "Ennuie et divertissement", 45200)
+let transaction11 = new Transaction("SenderA", "SenderB", "Rock > Rap ", 324000)
+let transaction12 = new Transaction("SenderA", "SenderB", "Ou est passé George Alcoolman", 78565)
+let transaction13 = new Transaction("SenderA", "SenderB", "Que faire maintenant", 98078)
+let transaction14 = new Transaction("SenderA", "SenderB", "Certaines chansons sont trop nulles !!", 28968)
+
+//TRANSACTION ARRAY
+let nextBlockTransactions2 = [];
+nextBlockTransactions2.push(transaction8,transaction9,transaction10,transaction11,transaction12,transaction13,transaction14)
+
+//Nouveau Block (Normalement créé par un mineur):
+let recentBlock2 = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions2, blockchain.difficulty )
+recentBlock2.blockHash = recentBlock.generateHash();
+
+console.log("recent block hash 2: ", recentBlock2.blockHash)
+
+//ajout d'un block
+blockchain.addBlock(recentBlock2);
