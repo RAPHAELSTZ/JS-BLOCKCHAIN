@@ -26,6 +26,11 @@ console.log("Pending transactions :", listOfPendingTransactions)
 
 
 
+
+//Instatiation of a miner:
+console.log("New minor starteed..");
+let slowMiner = new Miner();
+
 /**
  * FOR BLOCK 2
  */
@@ -43,8 +48,8 @@ nextBlockTransactions.push(transaction1,transaction2,transaction3,transaction4,t
 
 //Nouveau Block (Normalement créé par un mineur):
 let recentBlock = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions, blockchain.difficulty )
-recentBlock.blockHash = recentBlock.generateHash();
-
+// recentBlock.blockHash = recentBlock.generateHash();
+recentBlock.blockHash = slowMiner.generateHash(recentBlock)
 console.log("recent block hash: ", recentBlock.blockHash)
 
 //ajout d'un block
@@ -70,8 +75,8 @@ nextBlockTransactions2.push(transaction8,transaction9,transaction10,transaction1
 
 //Nouveau Block (Normalement créé par un mineur):
 let recentBlock2 = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions2, blockchain.difficulty )
-recentBlock2.blockHash = recentBlock.generateHash();
-
+// recentBlock2.blockHash = recentBlock.generateHash();
+recentBlock2.blockHash = slowMiner.generateHash(recentBlock2)
 console.log("recent block hash 2: ", recentBlock2.blockHash)
 
 //ajout d'un block
@@ -89,13 +94,12 @@ blockchain.addBlock(recentBlock2);
 // Instantiation of miner :
 
 
-console.log("New minor starteed..");
-let slowMiner = new Miner();
+
 
 console.log("CURRENT DIFFICULTY " , recentBlock2.difficulty)
 
-console.log("Starting hash quest : ");
-slowMiner.generateHash(recentBlock2);
+
+console.log("Blockchain content : ", blockchain.displayBlocks(0, blockchain.getChainHeight()))
 
 
 

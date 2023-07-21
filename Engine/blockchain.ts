@@ -119,7 +119,7 @@ export class Blockchain {
      * DEBUG FUNCTION : DISPLAY BLOCKS
      */
     public displayBlocks(first: number, last: number) {
-        console.log(this.chain.slice(first, last))
+        return this.chain.slice(first, last)
     }
 
 

@@ -4,6 +4,7 @@ export class Miner {
 
 
     private hashedData:string;
+    private SHOW_HASH_SEARCH:Boolean = false;
 
     constructor() {
         this.hashedData = ''
@@ -16,7 +17,7 @@ export class Miner {
     /**
  * Generates hash
  */
-    public generateHash(blockData: any): any {
+    public generateHash(blockData: any): string {
 
         let data = {
             timestamp: blockData.timestamp,
@@ -39,7 +40,7 @@ export class Miner {
         while(!this.checkLeadingZeros(this.hashedData, data.difficulty)) {
             data.noonce++;
             this.hashedData = SHA256(JSON.stringify(data)).toString();
-            console.log("Attempt with ", this.hashedData, "Noonce :", data.noonce)
+            if(this.SHOW_HASH_SEARCH) console.log("Attempt with ", this.hashedData, "Noonce :", data.noonce)
         }
 
         console.log("==== BLOCK MINED !! ====")
@@ -48,6 +49,7 @@ export class Miner {
         console.log("========================")
 
 
+        return this.hashedData
     }
 
               
