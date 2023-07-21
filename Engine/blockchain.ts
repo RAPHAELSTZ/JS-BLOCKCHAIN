@@ -8,7 +8,7 @@ export class Blockchain {
     public DEV_MODE = true;
     public name: string;
     public chain: Array<Block> = []
-    public difficulty: number = 5;
+    public difficulty: number = 3;
     public pendingTransactions: Array<Transaction> = []
     public miningReward: Number = 0;
     public genesis_block: {success:Boolean, error?: string, block?: Block};

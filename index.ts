@@ -1,6 +1,7 @@
 import { Blockchain } from "./Engine/blockchain";
 import { Block } from "./Engine/block"
 import { Transaction } from "./Engine/transaction";
+import { Miner } from "./Engine/miner";
 
 //File to launch Blockchain
 
@@ -75,3 +76,28 @@ console.log("recent block hash 2: ", recentBlock2.blockHash)
 
 //ajout d'un block
 blockchain.addBlock(recentBlock2);
+
+
+
+
+
+
+
+
+
+
+// Instantiation of miner :
+
+
+console.log("New minor starteed..");
+let slowMiner = new Miner();
+
+console.log("CURRENT DIFFICULTY " , recentBlock2.difficulty)
+
+console.log("Starting hash quest : ");
+slowMiner.generateHash(recentBlock2);
+
+
+
+
+
