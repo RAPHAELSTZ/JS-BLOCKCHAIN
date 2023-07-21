@@ -104,13 +104,25 @@ export class Blockchain {
          *     a valid hash following the difficulty game with a certain number of leading 0's
          *     
          *  */
+        console.log("PRE BUG ??????");
         if(!this.checksHashGame(block.blockHash, this.difficulty)) {
             console.log("The hash of your block is invalid !")
             return {success: false, error: "Hash invalid"}
         }
 
+        /**
+         * Checks block integrity by comparing given hash with blockchain self-checked
+         */
+        if(!this.checkBlockIntegrity(block) && block.heightNumber != 0)
+        {
+            console.log("The hash calculated by the node is not the one given on the block !")
+            return {success: false, error: "Hash mismatch"}
+        }
+
+
         console.log("Your block is valid, block pushed.")
         this.chain.push(block);
+
         return {success: true}
     }
 
@@ -136,6 +148,20 @@ export class Blockchain {
             }
         }
         return true;
+    }
+
+    /**
+     * Check Block Intergrity
+     */
+    private checkBlockIntegrity(block:Block){
+            //Verifying that the hash of the block is calculated from the block data
+            let checkerBlock = block.generateHash();
+
+            if( !(checkerBlock == block.blockHash )) return false
+
+        console.log("Block hash is correct.")
+        return true;
+
     }
 
     private checkBlock(block:Block): Boolean| BlockchainBooleanError{

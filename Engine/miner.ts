@@ -17,7 +17,7 @@ export class Miner {
     /**
  * Generates hash
  */
-    public generateHash(blockData: any): string {
+    public generateHash(blockData: any): {hashedData: string, noonce:number} {
 
         let data = {
             timestamp: blockData.timestamp,
@@ -49,10 +49,13 @@ export class Miner {
         console.log("========================")
 
 
-        return this.hashedData
+        return {
+            hashedData: this.hashedData,
+            noonce: data.noonce
+        }
     }
 
-              
+
 
     checkLeadingZeros(hash:string, diff:number) {
 

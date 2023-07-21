@@ -44,7 +44,6 @@ export class Block {
             return ""+Math.random()*1000000000000000000;
         }
 
-
         /**
          * Generates hash
          */
@@ -56,11 +55,11 @@ export class Block {
                 previousBlockHash: this.previousBlockHash,
                 transactionList: this.transactionList,
                 difficulty: this.difficulty,
-                noonce: this.noonce
+                noonce: this.noonce,
             }
 
             //generates hash
-            return JSON.stringify(SHA256(JSON.stringify(contentToHash)))
+            return SHA256(JSON.stringify(contentToHash)).toString()
         }
 
 }
