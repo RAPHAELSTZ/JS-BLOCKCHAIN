@@ -88,7 +88,6 @@ export class Blockchain {
          */
         try {
             let blockAddition:any = this.checkBlock(block);
-            console.log("DEBUG ADDITION ", blockAddition)
             if(!blockAddition) {
                 return {success: false, error: blockAddition.error}
             }
@@ -104,7 +103,6 @@ export class Blockchain {
          *     a valid hash following the difficulty game with a certain number of leading 0's
          *     
          *  */
-        console.log("PRE BUG ??????");
         if(!this.checksHashGame(block.blockHash, this.difficulty)) {
             console.log("The hash of your block is invalid !")
             return {success: false, error: "Hash invalid"}
@@ -177,7 +175,6 @@ export class Blockchain {
 
         let hasValues = this.hasValuesInProperties(block);
         if(!hasValues.success){
-            console.log("HAS VALUES DEBUG :", hasValues)
             return { success: false, error: "Fatal Error:" + hasValues.error}
         }
 
@@ -217,7 +214,6 @@ export class Blockchain {
     
     //The height of the blockchain start at 1 for the genesis Block.
     private hasValuesInProperties(block: Block):{ success: Boolean, error?: string }{
-        console.log("DEBUG HEIGHT : ", block.heightNumber)
         if(block.heightNumber == null || block.heightNumber < 0) return { success: false, error: 'This block has a wrong height number'}
         if(!block.timestamp ) return { success: false, error: "This block has a wrong/bad format timestamp"}
         if(!block.blockHash && block.heightNumber !=0) return { success: false, error: "This block does not have a blockhash"}

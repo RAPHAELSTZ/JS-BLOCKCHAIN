@@ -52,7 +52,6 @@ let recentBlock = new Block(blockchain.getChainHeight(), blockchain.chain[blockc
 let minerData = slowMiner.generateHash(recentBlock)
 recentBlock.blockHash = minerData.hashedData
 recentBlock.noonce = minerData.noonce
-console.log("recent block hash: ", recentBlock.blockHash, "Noonce :", recentBlock.noonce)
 
 //ajout d'un block
 blockchain.addBlock(recentBlock);
@@ -81,7 +80,6 @@ let recentBlock2 = new Block(blockchain.getChainHeight(), blockchain.chain[block
 minerData = slowMiner.generateHash(recentBlock2)
 recentBlock2.blockHash = minerData.hashedData
 recentBlock2.noonce = minerData.noonce
-console.log("recent block hash 2: ", recentBlock2.blockHash)
 
 //ajout d'un block
 blockchain.addBlock(recentBlock2);
