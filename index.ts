@@ -21,15 +21,15 @@ console.log("New blockchain : ", blockchain);
 let taille = blockchain.getChainHeight()
 console.log("Blockchain size :", taille)
 
-let listOfPendingTransactions = blockchain.getPendingTransactions()
-console.log("Pending transactions :", listOfPendingTransactions)
+// let listOfPendingTransactions = blockchain.getPendingTransactions()
+// console.log("Pending transactions :", listOfPendingTransactions)
 
 
 
 
 //Instatiation of a miner:
 console.log("New minor starteed..");
-let slowMiner = new Miner();
+let slowMiner = new Miner(blockchain);
 
 /**
  * FOR BLOCK 2
@@ -68,11 +68,13 @@ let transaction10 = new Transaction("SenderB", "SenderC", "Ennuie et divertissem
 let transaction11 = new Transaction("SenderA", "SenderB", "Rock > Rap ", 324000)
 let transaction12 = new Transaction("SenderA", "SenderB", "Ou est passé George Alcoolman?", 78565)
 let transaction13 = new Transaction("SenderA", "SenderB", "Que faire maintenant", 98078)
-let transaction14 = new Transaction("SenderA", "SenderB", "Certaines chansons sont trop nulles !!", 28968)
+let transaction14 = new Transaction("SenderA", "SenderB", "Certaines chansons sont trop nulles !!", 28968);
+let transaction15 = new Transaction("SenderB", "SenderC", "Ennuie et divertissement", 4520000)
+
 
 //TRANSACTION ARRAY
 let nextBlockTransactions2 = [];
-nextBlockTransactions2.push(transaction8,transaction9,transaction10,transaction11,transaction12,transaction13,transaction14)
+nextBlockTransactions2.push(transaction8,transaction9,transaction10,transaction11,transaction12,transaction13,transaction14,transaction15)
 
 //Nouveau Block (Normalement créé par un mineur):
 let recentBlock2 = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions2, blockchain.difficulty )
@@ -100,11 +102,14 @@ blockchain.addBlock(recentBlock2);
 
 
 console.log("CURRENT DIFFICULTY " , recentBlock2.difficulty)
-
-
 console.log("Blockchain content : ", blockchain.displayBlocks(0, blockchain.getChainHeight()))
 
 
 
+
+console.log("==============")
+console.log("WALLET CONTENT")
+console.log("==============")
+// blockchain.tpool.getUserBalance("SenderB")
 
 

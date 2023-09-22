@@ -1,4 +1,6 @@
 import { SHA256 } from "crypto-js"
+import { Transaction } from "./transaction";
+import { Blockchain } from "./blockchain";
 
 export class Miner {
 
@@ -6,7 +8,11 @@ export class Miner {
     private hashedData:string;
     private SHOW_HASH_SEARCH:Boolean = false;
 
-    constructor() {
+    //Pending transactions are sent to a particular Miner, in order to be then added to a block and then to the blockchain
+    public pendingTransactions: Array<Transaction> = []
+
+
+    constructor(private blockchain:Blockchain) {
         this.hashedData = ''
         console.log("Welcome to EclateMinor1.0, the worst minor ever")
     }
@@ -69,5 +75,8 @@ export class Miner {
 
     }
             
+
+
+
 
 }

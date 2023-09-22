@@ -2,6 +2,8 @@ import { Block } from "./block";
 import { Transaction } from "./transaction";
 import sha256 from 'crypto-js/sha256';
 import { BlockchainBooleanError } from "./types/BBError";
+import { Tpool } from "./tpool";
+import { Wallet } from "./wallet";
 
 
 export class Blockchain {
@@ -9,63 +11,42 @@ export class Blockchain {
     public name: string;
     public chain: Array<Block> = []
     public difficulty: number = 3;
-    public pendingTransactions: Array<Transaction> = []
     public miningReward: Number = 0;
-    public genesis_block: {success:Boolean, error?: string, block?: Block};
+    public genesis_block: { success: Boolean, error?: string, block?: Block };
+
+    public tpool: Tpool = new Tpool(this)
 
 
-
-    constructor(name:string){
+    constructor(
+        name: string
+    ) {
         this.name = name;
         //Creates genesis block
         this.genesis_block = this.createGenesisBlock()
-        
+
         //Add Genesis block to blockchain as First Block
-        if(this.genesis_block.success && this.genesis_block.block) {
-           let addingGenesis =  this.addBlock(this.genesis_block.block);
-           if(!addingGenesis || !addingGenesis.success) console.log("Could not add Genesis to blockchain... :( ", addingGenesis)
-        
+        if (this.genesis_block.success && this.genesis_block.block) {
+            let addingGenesis = this.addBlock(this.genesis_block.block);
+            if (!addingGenesis || !addingGenesis.success) console.log("Could not add Genesis to blockchain... :( ", addingGenesis)
+
         }
     }
 
-    //Methods
-    public checkBlockChain() {
 
-    }
     //new Block(tempChainHeight, this.chain[tempChainHeight - 1], pendingTransactionArray,
     // let tempChainHeight = this.getChainHeight();
 
-    /**
-     * Setter for the pending transactions array that will hold all the transaction that
-     * have yet to be included in a block on the blockchain
-     * @param transactions 
-     */
-    public addPendingTransactions(transactions: Array<Transaction>) {
-        if (this.getChainHeight() > 0) {
-            this.pendingTransactions = [...this.pendingTransactions, ...transactions]
-        }
-        else {
-            console.log("There is no genesis block on this blockchain")
-        }
-    }
 
-
-    /**
-     * Returns and display all pending Transactions
-     */
-    public getPendingTransactions() {
-        return this.pendingTransactions;
-    }
 
     /**
      * Creates the genesis block, which is a block of 
      * height 0. 
      */
-    private createGenesisBlock(): {success:Boolean, error?: string, block?: Block} {
+    private createGenesisBlock(): { success: Boolean, error?: string, block?: Block } {
         console.log("Checking that the blockchain has no block");
         if (this.getChainHeight() == 0) {
             console.log("A genesis block is being created..");
-            console.log("Genesis block created") 
+            console.log("Genesis block created")
             return { success: true, block: new Block(0, '', [], 7) }
         } else {
             let errorMessage = "You can't create two genesis blocks."
@@ -87,14 +68,13 @@ export class Blockchain {
          * Check that the block is well formed with data and 
          */
         try {
-            let blockAddition:any = this.checkBlock(block);
-            if(!blockAddition) {
-                return {success: false, error: blockAddition.error}
+            let blockAddition: any = this.checkBlock(block);
+            if (!blockAddition) {
+                return { success: false, error: blockAddition.error }
             }
-        } catch(e) {
+        } catch (e) {
             console.log("Error occured while checking block :", e)
-            return {success: false, error: "error"}
-
+            return { success: false, error: "error" }
         }
 
         //verif blockhash (Checks that the block has : 
@@ -103,30 +83,29 @@ export class Blockchain {
          *     a valid hash following the difficulty game with a certain number of leading 0's
          *     
          *  */
-        if(!this.checksHashGame(block.blockHash, this.difficulty)) {
+        if (!this.checksHashGame(block.blockHash, this.difficulty)) {
             console.log("The hash of your block is invalid !")
-            return {success: false, error: "Hash invalid"}
+            return { success: false, error: "Hash invalid" }
         }
 
         /**
          * Checks block integrity by comparing given hash with blockchain self-checked
          */
-        if(!this.checkBlockIntegrity(block) && block.heightNumber != 0)
-        {
+        if (!this.checkBlockIntegrity(block) && block.heightNumber != 0) {
             console.log("The hash calculated by the node is not the one given on the block !")
-            return {success: false, error: "Hash mismatch"}
+            return { success: false, error: "Hash mismatch" }
         }
 
 
         console.log("Your block is valid, block pushed.")
         this.chain.push(block);
 
-        return {success: true}
+        return { success: true }
     }
 
 
     /**
-     * DEBUG FUNCTION : DISPLAY BLOCKS
+     * DEBUG FUNCTION : DISPLAYS BLOCKS
      */
     public displayBlocks(first: number, last: number) {
         return this.chain.slice(first, last)
@@ -137,8 +116,8 @@ export class Blockchain {
     /**
      * Checks hash game validity
      */
-    private checksHashGame(hash: string, difficulty:number): Boolean | BlockchainBooleanError{
-        if(this.DEV_MODE) return true;
+    private checksHashGame(hash: string, difficulty: number): Boolean | BlockchainBooleanError {
+        if (this.DEV_MODE) return true;
 
         for (let i = 0; i < difficulty; i++) {
             if (hash[i] !== '0') {
@@ -151,53 +130,53 @@ export class Blockchain {
     /**
      * Check Block Intergrity
      */
-    private checkBlockIntegrity(block:Block){
-            //Verifying that the hash of the block is calculated from the block data
-            let checkerBlock = block.generateHash();
+    private checkBlockIntegrity(block: Block) {
+        //Verifying that the hash of the block is calculated from the block data
+        let checkerBlock = block.generateHash();
 
-            if( !(checkerBlock == block.blockHash )) return false
+        if (!(checkerBlock == block.blockHash)) return false
 
         console.log("Block hash is correct.")
         return true;
 
     }
 
-    private checkBlock(block:Block): Boolean| BlockchainBooleanError{
+    private checkBlock(block: Block): Boolean | BlockchainBooleanError {
         // const hashBlock = sha256(nonce + message);
 
         //Checking structure :
-        if(!this.hasThoseProperties(block, ["heightNumber","timestamp","blockHash","previousBlockHash","noonce","transactionList","difficulty"])) {
+        if (!this.hasThoseProperties(block, ["heightNumber", "timestamp", "blockHash", "previousBlockHash", "noonce", "transactionList", "difficulty"])) {
             return { success: false, error: 'Block structure invalid ! ' };
+        }
 
-        } 
-
-        console.log("BLOCK EVALUATED :" , block)
+        console.log("BLOCK EVALUATED :", block)
 
         let hasValues = this.hasValuesInProperties(block);
-        if(!hasValues.success){
-            return { success: false, error: "Fatal Error:" + hasValues.error}
+        if (!hasValues.success) {
+            return { success: false, error: "Fatal Error:" + hasValues.error }
         }
 
         //Checking necessary values: 
         //The index of the block is greater than the current size of the blockchain
-        if(!(block.heightNumber > this.chain.length-1)){
-        return { success: false, error: 'Block height is below blockchain peak index'}
+        if (!(block.heightNumber > this.chain.length - 1)) {
+            return { success: false, error: 'Block height is below blockchain peak index' }
         }
-        
+
         //Timestamp of the block must be greater than right now, and later than the last block mined (TO IMPROVE, example global Date rather than date())
-        if(block.timestamp > new Date()) {
-        return { success: false, error: 'Timestamp for block is invalid' }
+        if (block.timestamp > new Date()) {
+            return { success: false, error: 'Timestamp for block is invalid' }
         }
 
         //Checking that previous blockhash is actually the previous block hash
         let tempChainHeight = this.getChainHeight();
-        if(tempChainHeight > 1 && block.previousBlockHash != this.chain[tempChainHeight - 1].blockHash) {
-            return { success: false, error: "Previous blockhash is not correct"}
+        if (tempChainHeight > 1 && block.previousBlockHash != this.chain[tempChainHeight - 1].blockHash) {
+            return { success: false, error: "Previous blockhash is not correct" }
         }
 
-        
-        //Checks structure:
-        
+        //Checking validity of inner trnasactions (Each transaction of each block is valid) :
+        this.checkBlockTransactions(block);
+
+        //Checks structur
         return true;
     }
 
@@ -207,23 +186,53 @@ export class Blockchain {
      * @para(m properties Check)s if an object struvture is
      * @returns 
      */
-    private hasThoseProperties(block:Block, properties: Array<string>):Boolean {
-        return properties.every ( (prop) => block.hasOwnProperty(prop))
+    private hasThoseProperties(block: Block, properties: Array<string>): Boolean {
+        return properties.every((prop) => block.hasOwnProperty(prop))
     }
 
-    
+
     //The height of the blockchain start at 1 for the genesis Block.
-    private hasValuesInProperties(block: Block):{ success: Boolean, error?: string }{
-        if(block.heightNumber == null || block.heightNumber < 0) return { success: false, error: 'This block has a wrong height number'}
-        if(!block.timestamp ) return { success: false, error: "This block has a wrong/bad format timestamp"}
-        if(!block.blockHash && block.heightNumber !=0) return { success: false, error: "This block does not have a blockhash"}
-        if(!block.previousBlockHash && block.heightNumber !=1) return { success: false, error: "This block does not hold a previousBlockhash"}
-        if(!block.noonce && block.heightNumber !=1) return { success: false, error: "This block has no noonce.."}
-        if(!block.transactionList) return { success: false, error: "This block holds no transaction, or has a bad transaction List"}
-        if(!block.difficulty) return { success: false, error: "This block has no difficulty"}
+    private hasValuesInProperties(block: Block): { success: Boolean, error?: string } {
+        if (block.heightNumber == null || block.heightNumber < 0) return { success: false, error: 'This block has a wrong height number' }
+        if (!block.timestamp) return { success: false, error: "This block has a wrong/bad format timestamp" }
+        if (!block.blockHash && block.heightNumber != 0) return { success: false, error: "This block does not have a blockhash" }
+        if (!block.previousBlockHash && block.heightNumber != 1) return { success: false, error: "This block does not hold a previousBlockhash" }
+        if (!block.noonce && block.heightNumber != 1) return { success: false, error: "This block has no noonce.." }
+        if (!block.transactionList) return { success: false, error: "This block holds no transaction, or has a bad transaction List" }
+        if (!block.difficulty) return { success: false, error: "This block has no difficulty" }
 
-        return { success: true}
+        return { success: true }
+    }
 
+
+
+
+
+    private checkBlockTransactions(block: Block) {
+        //checks that eadch transaction is valid
+
+        block.transactionList.forEach(
+            (transaction) => {
+                let sender = transaction.senderAddress;
+                let receiver = transaction.receiverAddress;
+
+                let walletSender = new Wallet(this, sender);
+                let walleteceiver = new Wallet(this, receiver);
+
+                //Calculating sender Balance
+                let walletSenderBalance = walletSender.getUserBalance(sender);
+                let walletReceiverBalance = walleteceiver.getUserBalance(receiver);
+
+                //If transaction is higher than the available balance
+                if (walletSenderBalance - transaction.amountInSatoshi < 0) {
+                    return Error("Transaction is invalid :" + JSON.stringify(transaction));
+                }
+            }
+        )
+
+        console.log("Block's transactions are valid !")
+
+        return { code: 10, message: "Block transactions are valid." }
     }
 
 

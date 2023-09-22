@@ -1,0 +1,21 @@
+Info about blockchainJs (install & more.. )
+
+
+#ts-node allows to read typescript files without compilation , nodemon restarts nodejs automatically
+npm install --save-dev ts-node nodemon
+
+------------------
+nodemon.json file:
+------------------
+{
+  "watch": ["src"], // Location to watch by nodemon 
+  "ext": "ts",
+  "exec": "ts-node ./src/index.ts"
+}
+
+
+
+
+#To start dev node :
+npm run dev
+
