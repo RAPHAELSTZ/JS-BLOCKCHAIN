@@ -1,13 +1,13 @@
 import { Block } from "./block";
 import { Transaction } from "./transaction";
 import sha256 from 'crypto-js/sha256';
-import { BlockchainBooleanError } from "./types/BBError";
+import { BlockTransactionsValid, BlockchainBooleanError } from "./types/BBError";
 import { Tpool } from "./tpool";
 import { Wallet } from "./wallet";
-
+import { BehaviorSubject } from "rxjs";
 
 export class Blockchain {
-    public DEV_MODE = true;
+    public DEV_MODE = new BehaviorSubject(true) ;
     public name: string;
     public chain: Array<Block> = []
     public difficulty: number = 3;
@@ -69,7 +69,7 @@ export class Blockchain {
          */
         try {
             let blockAddition: any = this.checkBlock(block);
-            if (!blockAddition) {
+            if (!blockAddition.success) {
                 return { success: false, error: blockAddition.error }
             }
         } catch (e) {
@@ -117,8 +117,8 @@ export class Blockchain {
      * Checks hash game validity
      */
     private checksHashGame(hash: string, difficulty: number): Boolean | BlockchainBooleanError {
-        if (this.DEV_MODE) return true;
-
+        if (this.DEV_MODE.getValue()) return true;
+        
         for (let i = 0; i < difficulty; i++) {
             if (hash[i] !== '0') {
                 return false;
@@ -149,8 +149,6 @@ export class Blockchain {
             return { success: false, error: 'Block structure invalid ! ' };
         }
 
-        console.log("BLOCK EVALUATED :", block)
-
         let hasValues = this.hasValuesInProperties(block);
         if (!hasValues.success) {
             return { success: false, error: "Fatal Error:" + hasValues.error }
@@ -174,10 +172,15 @@ export class Blockchain {
         }
 
         //Checking validity of inner trnasactions (Each transaction of each block is valid) :
-        this.checkBlockTransactions(block);
+        let checkTransactions:BlockTransactionsValid = this.checkBlockTransactions(block);
+        if (!checkTransactions.blockTransactionValid) {
+            console.log("There is at least a wrong Transaction in the blockchain")
+            return { success: false, error: "Block contains bad transactions :"+ JSON.stringify(checkTransactions.transactionsInError) }
 
+        }
         //Checks structur
-        return true;
+        return { success: true }
+
     }
 
 
@@ -208,31 +211,42 @@ export class Blockchain {
 
 
 
-    private checkBlockTransactions(block: Block) {
+    private checkBlockTransactions(block: Block): BlockTransactionsValid {
         //checks that eadch transaction is valid
 
-        block.transactionList.forEach(
-            (transaction) => {
-                let sender = transaction.senderAddress;
-                let receiver = transaction.receiverAddress;
+        let hasInvalidTransactions = false;
+        let invalidTransactions: Array<Transaction> = [];
 
-                let walletSender = new Wallet(this, sender);
-                let walleteceiver = new Wallet(this, receiver);
+        const hasInvalidTransaction = block.transactionList.forEach((transaction) => {
+            let sender = transaction.senderAddress;
+            let receiver = transaction.receiverAddress;
 
-                //Calculating sender Balance
-                let walletSenderBalance = walletSender.getUserBalance(sender);
-                let walletReceiverBalance = walleteceiver.getUserBalance(receiver);
+            let walletSender = new Wallet(this, sender);
+            let walleteceiver = new Wallet(this, receiver);
 
-                //If transaction is higher than the available balance
-                if (walletSenderBalance - transaction.amountInSatoshi < 0) {
-                    return Error("Transaction is invalid :" + JSON.stringify(transaction));
-                }
+            let walletSenderBalance = walletSender.getUserBalance(sender);
+            let walletReceiverBalance = walleteceiver.getUserBalance(receiver);
+
+            if (walletSenderBalance - transaction.amountInSatoshi < 0) {
+                console.log("Transaction is invalid");
+                hasInvalidTransactions = true; // This will break the loop
+                invalidTransactions.push(transaction)
             }
-        )
+
+            return false;
+        });
+
+        if (hasInvalidTransactions) {
+            return {
+                blockTransactionValid: false,
+                transactionsInError: invalidTransactions
+            }
+        }
 
         console.log("Block's transactions are valid !")
-
-        return { code: 10, message: "Block transactions are valid." }
+        return {
+            blockTransactionValid: true
+        };
     }
 
 

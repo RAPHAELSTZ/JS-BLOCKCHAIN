@@ -44,10 +44,14 @@ let transaction6 = new Transaction("SenderA", "SenderB", "Nano est mieux que bit
 let transaction7 = new Transaction("SenderA", "SenderB", "Allez ferme là", 28968)
 //TRANSACTION ARRAY
 let nextBlockTransactions = [];
-nextBlockTransactions.push(transaction1,transaction2,transaction3,transaction4,transaction5,transaction6,transaction7)
+nextBlockTransactions.push(transaction1, transaction2, transaction3, transaction4, transaction5, transaction6, transaction7)
 
 //Nouveau Block (Normalement créé par un mineur):
-let recentBlock = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions, blockchain.difficulty )
+let recentBlock = new Block(
+    blockchain.getChainHeight(),
+    blockchain.getChainHeight() - 1 > 0 ? blockchain.chain[blockchain.getChainHeight() - 1].blockHash : '0000000000000000000000000000000000000000',
+    nextBlockTransactions,
+    blockchain.difficulty)
 // recentBlock.blockHash = recentBlock.generateHash();
 let minerData = slowMiner.generateHash(recentBlock)
 recentBlock.blockHash = minerData.hashedData
@@ -74,10 +78,14 @@ let transaction15 = new Transaction("SenderB", "SenderC", "Ennuie et divertissem
 
 //TRANSACTION ARRAY
 let nextBlockTransactions2 = [];
-nextBlockTransactions2.push(transaction8,transaction9,transaction10,transaction11,transaction12,transaction13,transaction14,transaction15)
+nextBlockTransactions2.push(transaction8, transaction9, transaction10, transaction11, transaction12, transaction13, transaction14, transaction15)
 
 //Nouveau Block (Normalement créé par un mineur):
-let recentBlock2 = new Block(blockchain.getChainHeight(), blockchain.chain[blockchain.getChainHeight()-1].blockHash, nextBlockTransactions2, blockchain.difficulty )
+let recentBlock2 = new Block(
+    blockchain.getChainHeight(),
+    blockchain.getChainHeight() - 1 > 0 ? blockchain.chain[blockchain.getChainHeight() - 1].blockHash : '0000000000000000000000000000000000000000',
+    nextBlockTransactions2,
+    blockchain.difficulty)
 // recentBlock2.blockHash = recentBlock.generateHash();
 minerData = slowMiner.generateHash(recentBlock2)
 recentBlock2.blockHash = minerData.hashedData
@@ -101,7 +109,7 @@ blockchain.addBlock(recentBlock2);
 
 
 
-console.log("CURRENT DIFFICULTY " , recentBlock2.difficulty)
+console.log("CURRENT DIFFICULTY ", recentBlock2.difficulty)
 console.log("Blockchain content : ", blockchain.displayBlocks(0, blockchain.getChainHeight()))
 
 

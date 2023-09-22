@@ -41,7 +41,6 @@ export class Wallet {
                 }
             )
         });
-        console.log("Sender's balance is : " + senderBalance+ " Satoshi.");
         return senderBalance;
     }
 
